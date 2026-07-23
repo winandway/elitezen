@@ -71,14 +71,21 @@ jobs:
       - name: Construir
         run: pnpm exec opennextjs-cloudflare build
 
+      # Wrangler EMPAQUETA (bundle) el worker y todo lo que importa en un solo
+      # archivo. Sin este paso habría que subir la carpeta .open-next entera
+      # (1000+ archivos, ~19 MB, con proveedores de AWS que no se usan), y el
+      # despliegue se cae. Comprobado contra la nube real.
+      - name: Empaquetar para desplegar
+        run: pnpm exec wrangler deploy --dry-run --outdir .yapanel-bundle
+
       - name: Ver qué produjo el build
         run: |
-          echo "--- raíz de .open-next ---"
-          ls -la .open-next || true
-          echo "--- tamaño del worker ---"
-          du -h .open-next/worker.js 2>/dev/null || true
-          echo "--- assets (primeros 20) ---"
-          ls .open-next/assets 2>/dev/null | head -20 || true
+          echo "--- bundle listo para desplegar ---"
+          ls -la .yapanel-bundle || true
+          echo "--- peso del bundle ---"
+          du -sh .yapanel-bundle || true
+          echo "--- assets ---"
+          du -sh .open-next/assets 2>/dev/null || true
 
       - name: Empaquetar la salida
         run: |
@@ -89,7 +96,11 @@ jobs:
           fi
           rm -rf .yapanel-out
           mkdir -p .yapanel-out
-          cp -r .open-next/. .yapanel-out/
+          # El CÓDIGO va empaquetado (unos pocos archivos), no crudo.
+          cp -r .yapanel-bundle/. .yapanel-out/
+          # Y los estáticos aparte, que los sirve env.ASSETS.
+          mkdir -p .yapanel-out/assets
+          cp -r .open-next/assets/. .yapanel-out/assets/
           echo "opennext" > .yapanel-out/.yapanel-build
 
       - name: Publicar en la rama yapanel-build
