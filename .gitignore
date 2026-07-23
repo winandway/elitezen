@@ -42,3 +42,7 @@ next-env.d.ts
 
 # Archivos fuente internos del cliente (no publicar en repo público)
 _fuentes-cliente/
+
+# Config local de herramientas (no publicar)
+CLAUDE.md
+.claude/
