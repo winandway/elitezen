@@ -188,6 +188,31 @@ export default function Home() {
               </p>
             </div>
           ))}
+
+          {/* Tarjeta de llamada a la acción — cierra la cuadrícula */}
+          <div className="relative flex flex-col items-center justify-center rounded-2xl border border-gold/40 bg-gradient-to-br from-gold/[0.12] via-navy-800 to-navy-800 p-6 text-center">
+            <Image
+              src="/logo-elitezen.png"
+              alt=""
+              width={1080}
+              height={941}
+              className="h-14 w-auto opacity-95"
+            />
+            <p className="mt-4 font-display text-lg font-bold text-white">
+              Tu lugar entre los{" "}
+              <span className="text-gold-gradient">100</span>
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-300">
+              Estas ventajas no volverán a ofrecerse una vez cerrada la
+              campaña. Asegura hoy tu Membresía Fundador.
+            </p>
+            <a
+              href="#pago"
+              className="btn-gold mt-5 inline-block rounded-full px-6 py-3 text-sm tracking-wide"
+            >
+              QUIERO SER FUNDADOR
+            </a>
+          </div>
         </div>
       </section>
 
