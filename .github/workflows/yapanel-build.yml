@@ -1,0 +1,106 @@
+name: YaPanel build
+
+# Compila el proyecto y publica SOLO la salida ya construida en la rama
+# `yapanel-build`. YaDominios Cloud toma esa rama y la despliega.
+#
+# No necesita ningún token ni secreto: usa el token que GitHub genera para
+# cada ejecución. La configuración de Cloudflare se genera aquí si no existe,
+# para no ensuciar el repositorio del proyecto.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: yapanel-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v4
+
+      - name: Preparar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Añadir el adaptador de Cloudflare
+        run: pnpm add -D @opennextjs/cloudflare wrangler
+
+      - name: Generar la configuración si falta
+        run: |
+          if [ ! -f open-next.config.ts ]; then
+            cat > open-next.config.ts <<'ARCHIVO'
+          import { defineCloudflareConfig } from "@opennextjs/cloudflare";
+          export default defineCloudflareConfig();
+          ARCHIVO
+            echo "open-next.config.ts generado"
+          fi
+
+          if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
+            cat > wrangler.jsonc <<'ARCHIVO'
+          {
+            "name": "sitio",
+            "main": ".open-next/worker.js",
+            "compatibility_date": "2025-06-01",
+            "compatibility_flags": ["nodejs_compat"],
+            "assets": {
+              "directory": ".open-next/assets",
+              "binding": "ASSETS"
+            }
+          }
+          ARCHIVO
+            echo "wrangler.jsonc generado"
+          fi
+
+      - name: Construir
+        run: pnpm exec opennextjs-cloudflare build
+
+      - name: Ver qué produjo el build
+        run: |
+          echo "--- raíz de .open-next ---"
+          ls -la .open-next || true
+          echo "--- tamaño del worker ---"
+          du -h .open-next/worker.js 2>/dev/null || true
+          echo "--- assets (primeros 20) ---"
+          ls .open-next/assets 2>/dev/null | head -20 || true
+
+      - name: Empaquetar la salida
+        run: |
+          set -e
+          if [ ! -d .open-next ]; then
+            echo "No se generó .open-next. El build no terminó bien."
+            exit 1
+          fi
+          rm -rf .yapanel-out
+          mkdir -p .yapanel-out
+          cp -r .open-next/. .yapanel-out/
+          echo "opennext" > .yapanel-out/.yapanel-build
+
+      - name: Publicar en la rama yapanel-build
+        run: |
+          set -e
+          cd .yapanel-out
+          git init -q
+          git config user.name "yapanel-bot"
+          git config user.email "bot@yapanel.local"
+          git checkout -q -b yapanel-build
+          git add -A
+          git commit -q -m "build ${{ github.sha }}"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" yapanel-build
+          echo "Publicado en la rama yapanel-build"
