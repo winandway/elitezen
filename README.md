@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "sitio" generated at 2026-07-24T05:41:50.483Z.
