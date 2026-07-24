@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CAMPANA } from "@/lib/campana";
+import { usePlazas } from "@/hooks/usePlazas";
 
 /**
  * Botón de llamada a la acción siempre visible durante el scroll.
@@ -28,7 +28,7 @@ export default function CtaFlotante() {
     return () => window.removeEventListener("scroll", alScroll);
   }, []);
 
-  const restantes = CAMPANA.totalPlazas - CAMPANA.plazasOcupadas;
+  const { restantes } = usePlazas();
 
   return (
     <div

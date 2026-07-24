@@ -1,10 +1,9 @@
 import Image from "next/image";
+import ContadorPlazas from "./ContadorPlazas";
 import { CAMPANA } from "@/lib/campana";
 
 export default function Hero() {
-  const { totalPlazas, plazasOcupadas, fechaCierre } = CAMPANA;
-  const restantes = totalPlazas - plazasOcupadas;
-  const pct = Math.round((plazasOcupadas / totalPlazas) * 100);
+  const { totalPlazas } = CAMPANA;
 
   return (
     <>
@@ -46,33 +45,8 @@ export default function Hero() {
             </a>
           </div>
 
-          {/* Contador de plazas */}
-          <div className="rise mx-auto mt-12 max-w-md rounded-2xl border border-white/10 bg-navy-800/70 p-6 backdrop-blur">
-            <div className="flex items-end justify-between">
-              <span className="font-display text-sm font-medium text-slate-300">
-                Plazas disponibles
-              </span>
-              <span className="font-display text-lg font-bold text-white">
-                Quedan <span className="text-gold-gradient">{restantes}</span> de{" "}
-                {totalPlazas}
-              </span>
-            </div>
-            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${Math.max(pct, 2)}%`,
-                  background:
-                    "linear-gradient(90deg, var(--color-gold-deep), var(--color-gold))",
-                }}
-              />
-            </div>
-            <p className="mt-4 text-xs leading-relaxed text-slate-400">
-              La campaña permanecerá abierta hasta el{" "}
-              <span className="font-semibold text-slate-200">{fechaCierre}</span>{" "}
-              o hasta completar las {totalPlazas} plazas, lo que ocurra primero.
-            </p>
-          </div>
+          {/* Contador de plazas en vivo (lee la base de datos) */}
+          <ContadorPlazas />
         </div>
       </section>
 

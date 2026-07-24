@@ -1,6 +1,7 @@
 import Image from "next/image";
+import PlazasEnLinea from "./PlazasEnLinea";
 import Revelar from "./Revelar";
-import { AREAS, BENEFICIOS, CAMPANA, FIRMAS, VISION } from "@/lib/campana";
+import { AREAS, BENEFICIOS, FIRMAS, VISION } from "@/lib/campana";
 
 /* ---------- piezas pequeñas ---------- */
 
@@ -457,8 +458,6 @@ export function MensajeFundador() {
 /* ---------- LLAMADA FINAL ---------- */
 
 export function LlamadaFinal() {
-  const restantes = CAMPANA.totalPlazas - CAMPANA.plazasOcupadas;
-
   return (
     <section className="dot-grid relative overflow-hidden">
       <div className="hero-glow absolute inset-0" />
@@ -482,11 +481,7 @@ export function LlamadaFinal() {
             QUIERO SER FUNDADOR
           </a>
 
-          <p className="mt-6 text-sm text-slate-400">
-            Quedan <span className="font-semibold text-gold">{restantes}</span>{" "}
-            de {CAMPANA.totalPlazas} plazas · Campaña abierta hasta el{" "}
-            {CAMPANA.fechaCierre}
-          </p>
+          <PlazasEnLinea />
         </Revelar>
       </div>
     </section>
