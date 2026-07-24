@@ -7,9 +7,10 @@ registran en la landing. Vive en **`/panel`** (no aparece en buscadores).
 
 ## Cómo funciona el flujo completo
 
-1. El visitante toca **PAGAR** en la página → llena el formulario
-   (nombre, correo, país) → su registro queda guardado como **pendiente**
-   en la base de datos → se abre la pasarela (SumUp o Bold) en otra ventana.
+1. El visitante toca **QUIERO SER FUNDADOR** → crea su **cuenta**
+   (nombre, correo, país y contraseña) en `/registro` → entra a su área
+   privada `/cuenta` → elige la moneda y toca pagar → su pedido queda
+   **pendiente** en la base y se abre la pasarela (SumUp o Bold).
 2. El administrador entra a `/panel` con la clave, ve el registro y
    comprueba el pago en su cuenta de SumUp/Bold.
 3. Toca **«Confirmar pago»** → el registro pasa a **pagado**, se genera su
@@ -17,6 +18,8 @@ registran en la landing. Vive en **`/panel`** (no aparece en buscadores).
    **Copiar ePIN** y **Enviar por correo** (abre el correo ya redactado).
 4. La barra **«Quedan X de 100»** de la página pública avanza sola con cada
    pago confirmado.
+5. El Fundador, al entrar a su cuenta (`/entrar`), ve su plaza confirmada
+   con **su número de Fundador (#1 a #100)** y su **ePIN** siempre a mano.
 
 Otras acciones: el menú de tres puntos (⋮) de cada fila permite **Anular
 pedido** (con confirmación) y **Reabrir** los anulados. Confirmar dos veces
@@ -30,6 +33,9 @@ configura en el panel de YaDominios (tu sitio → **Variables de entorno**):
 - Nombre: `PANEL_CLAVE`
 - Valor: la clave que tú elijas (larga y difícil de adivinar)
 
+La misma variable firma las sesiones de los Fundadores. Si algún día
+quieres separarlas, agrega también `SESION_SECRETO` (opcional).
+
 Al guardarla, el sitio se republica solo y la clave queda activa. Sin esa
 variable, el panel muestra un aviso y no deja entrar a nadie.
 
@@ -40,6 +46,11 @@ variable, el panel muestra un aviso y no deja entrar a nadie.
 | Ruta | Método | Uso |
 |---|---|---|
 | `/datos/pedido` | POST | Registro público (crea pedido pendiente) |
+| `/datos/auth/registro` | POST | Crear cuenta de Fundador (abre sesión) |
+| `/datos/auth/entrar` | POST | Iniciar sesión |
+| `/datos/auth/salir` | POST | Cerrar sesión |
+| `/datos/auth/yo` | GET | ¿Hay sesión abierta? |
+| `/datos/cuenta` | GET/POST | Estado del Fundador y reserva de su pedido |
 | `/datos/plazas` | GET | Contador público de plazas |
 | `/datos/panel` | GET/POST | Lista y acciones del panel (cabecera `x-clave`) |
 

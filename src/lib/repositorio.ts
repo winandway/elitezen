@@ -4,7 +4,15 @@
  * para poder probar el flujo completo de la interfaz.
  */
 
-import type { D1Base, Epin, EstadoPedido, Metodo, Moneda, Pedido } from "./tipos";
+import type {
+  D1Base,
+  Epin,
+  EstadoPedido,
+  Metodo,
+  Moneda,
+  Pedido,
+  Usuario,
+} from "./tipos";
 
 /* ---------- obtención del binding ---------- */
 
@@ -24,9 +32,14 @@ async function baseD1(): Promise<D1Base | null> {
 /* en desarrollo cada ruta se compila aparte: la memoria vive en globalThis
    para que todas vean los mismos datos (en producción manda D1) */
 const global = globalThis as unknown as {
-  __memoriaElitezen?: { pedidos: Pedido[]; epins: Epin[] };
+  __memoriaElitezen?: { pedidos: Pedido[]; epins: Epin[]; usuarios: Usuario[] };
 };
-const memoria = (global.__memoriaElitezen ??= { pedidos: [], epins: [] });
+const memoria = (global.__memoriaElitezen ??= {
+  pedidos: [],
+  epins: [],
+  usuarios: [],
+});
+memoria.usuarios ??= [];
 
 const ahora = () => new Date().toISOString().slice(0, 19).replace("T", " ");
 
@@ -220,6 +233,99 @@ export async function cambiarEstadoPedido(
   if (!pedido) return false;
   pedido.estado = estado;
   return true;
+}
+
+/* ---------- cuentas de Fundador ---------- */
+
+export async function crearUsuario(datos: {
+  nombre: string;
+  correo: string;
+  pais: string | null;
+  clave_sal: string;
+  clave_hash: string;
+}): Promise<{ ok: boolean; usuario?: Usuario; error?: string }> {
+  const correo = datos.correo.trim().toLowerCase();
+  const db = await baseD1();
+
+  const usuario: Usuario = {
+    id: generarId(),
+    nombre: datos.nombre,
+    correo,
+    pais: datos.pais,
+    clave_sal: datos.clave_sal,
+    clave_hash: datos.clave_hash,
+    creado_en: ahora(),
+  };
+
+  if (db) {
+    const existe = await db
+      .prepare("SELECT id FROM usuarios WHERE correo = ? LIMIT 1")
+      .bind(correo)
+      .first<{ id: string }>();
+    if (existe) return { ok: false, error: "Ya existe una cuenta con ese correo" };
+    await db
+      .prepare(
+        "INSERT INTO usuarios (id, nombre, correo, pais, clave_sal, clave_hash) VALUES (?,?,?,?,?,?)",
+      )
+      .bind(usuario.id, usuario.nombre, correo, usuario.pais, usuario.clave_sal, usuario.clave_hash)
+      .run();
+    return { ok: true, usuario };
+  }
+
+  if (memoria.usuarios.some((u) => u.correo === correo)) {
+    return { ok: false, error: "Ya existe una cuenta con ese correo" };
+  }
+  memoria.usuarios.push(usuario);
+  return { ok: true, usuario };
+}
+
+export async function usuarioPorCorreo(correo: string): Promise<Usuario | null> {
+  const c = correo.trim().toLowerCase();
+  const db = await baseD1();
+  if (db) {
+    return db
+      .prepare("SELECT * FROM usuarios WHERE correo = ? LIMIT 1")
+      .bind(c)
+      .first<Usuario>();
+  }
+  return memoria.usuarios.find((u) => u.correo === c) ?? null;
+}
+
+/** Pedido vigente de un correo (el más reciente que no esté anulado). */
+export async function pedidoActivoDeCorreo(correo: string): Promise<Pedido | null> {
+  const c = correo.trim().toLowerCase();
+  const db = await baseD1();
+  if (db) {
+    return db
+      .prepare(
+        "SELECT * FROM pedidos WHERE correo = ? AND estado != 'anulado' ORDER BY creado_en DESC LIMIT 1",
+      )
+      .bind(c)
+      .first<Pedido>();
+  }
+  return (
+    memoria.pedidos.find((p) => p.correo === c && p.estado !== "anulado") ?? null
+  );
+}
+
+/** Posición (1..100) entre los pagos confirmados, por fecha de confirmación. */
+export async function numeroDeFundador(correo: string): Promise<number | null> {
+  const c = correo.trim().toLowerCase();
+  const db = await baseD1();
+  if (db) {
+    const { results } = await db
+      .prepare(
+        "SELECT correo FROM pedidos WHERE estado = 'pagado' ORDER BY confirmado_en ASC, creado_en ASC",
+      )
+      .all<{ correo: string }>();
+    const i = results.findIndex((r) => r.correo === c);
+    return i === -1 ? null : i + 1;
+  }
+  const pagados = memoria.pedidos
+    .filter((p) => p.estado === "pagado")
+    .sort((a, b) => (a.confirmado_en ?? "").localeCompare(b.confirmado_en ?? ""));
+  const i = pagados.findIndex((p) => p.correo === c);
+  return i === -1 ? null : i + 1;
 }
 
 /* ---------- clave del panel ---------- */

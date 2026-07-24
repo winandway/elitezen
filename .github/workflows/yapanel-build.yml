@@ -101,6 +101,9 @@ jobs:
           # Y los estáticos aparte, que los sirve env.ASSETS.
           mkdir -p .yapanel-out/assets
           cp -r .open-next/assets/. .yapanel-out/assets/
+          # El esquema de la base viaja con la salida: YaDominios lo ejecuta
+          # (idempotente) contra la base del sitio en cada publicación.
+          cp schema.sql .yapanel-out/ 2>/dev/null || true
           echo "opennext" > .yapanel-out/.yapanel-build
 
       - name: Publicar en la rama yapanel-build

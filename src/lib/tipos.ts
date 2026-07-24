@@ -29,6 +29,16 @@ export interface Epin {
   activado_en: string | null;
 }
 
+export interface Usuario {
+  id: string;
+  nombre: string;
+  correo: string;
+  pais: string | null;
+  clave_sal: string;
+  clave_hash: string;
+  creado_en: string;
+}
+
 /** Subconjunto de la interfaz D1 que usamos (evita depender de workers-types). */
 export interface D1Consulta {
   bind(...valores: unknown[]): D1Consulta;

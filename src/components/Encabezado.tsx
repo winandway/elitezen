@@ -1,16 +1,25 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Encabezado() {
   const [compacto, setCompacto] = useState(false);
+  const [sesion, setSesion] = useState<{ conectado: boolean } | null>(null);
 
   useEffect(() => {
     const alScroll = () => setCompacto(window.scrollY > 24);
     alScroll();
     window.addEventListener("scroll", alScroll, { passive: true });
     return () => window.removeEventListener("scroll", alScroll);
+  }, []);
+
+  useEffect(() => {
+    fetch("/datos/auth/yo", { cache: "no-store" })
+      .then((r) => r.json())
+      .then(setSesion)
+      .catch(() => setSesion({ conectado: false }));
   }, []);
 
   return (
@@ -35,12 +44,20 @@ export default function Encabezado() {
             }`}
           />
         </a>
-        <a
-          href="#pago"
-          className="btn-gold hidden rounded-full px-5 py-2.5 text-sm sm:inline-block"
-        >
-          Quiero ser Fundador
-        </a>
+        <nav className="flex items-center gap-4">
+          <Link
+            href={sesion?.conectado ? "/cuenta" : "/entrar"}
+            className="text-sm font-semibold text-slate-200 transition hover:text-gold"
+          >
+            {sesion?.conectado ? "Mi cuenta" : "Entrar"}
+          </Link>
+          <a
+            href="#pago"
+            className="btn-gold hidden rounded-full px-5 py-2.5 text-sm sm:inline-block"
+          >
+            Quiero ser Fundador
+          </a>
+        </nav>
       </div>
     </header>
   );

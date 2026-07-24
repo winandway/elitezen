@@ -35,3 +35,16 @@ CREATE TABLE IF NOT EXISTS epins (
 );
 
 CREATE INDEX IF NOT EXISTS idx_epins_codigo ON epins (codigo);
+
+-- Cuentas de Fundador (registro con correo y contraseña)
+CREATE TABLE IF NOT EXISTS usuarios (
+  id          TEXT PRIMARY KEY,
+  nombre      TEXT NOT NULL,
+  correo      TEXT NOT NULL UNIQUE,
+  pais        TEXT,
+  clave_sal   TEXT NOT NULL,               -- sal del hash (hex)
+  clave_hash  TEXT NOT NULL,               -- PBKDF2-SHA256 (hex)
+  creado_en   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_usuarios_correo ON usuarios (correo);
