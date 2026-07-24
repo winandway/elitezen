@@ -298,6 +298,36 @@ export async function cambiarEstadoPedido(
   return true;
 }
 
+/** Borra de raíz un pedido ANULADO y sus ePINs (los demás estados no se tocan). */
+export async function eliminarPedido(
+  pedidoId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const db = await baseD1();
+
+  if (db) {
+    const pedido = await db
+      .prepare("SELECT estado FROM pedidos WHERE id = ? LIMIT 1")
+      .bind(pedidoId)
+      .first<{ estado: EstadoPedido }>();
+    if (!pedido) return { ok: false, error: "Pedido no encontrado" };
+    if (pedido.estado !== "anulado") {
+      return { ok: false, error: "Primero anula el pedido; solo se eliminan los anulados" };
+    }
+    await db.prepare("DELETE FROM epins WHERE pedido_id = ?").bind(pedidoId).run();
+    await db.prepare("DELETE FROM pedidos WHERE id = ?").bind(pedidoId).run();
+    return { ok: true };
+  }
+
+  const pedido = memoria.pedidos.find((p) => p.id === pedidoId);
+  if (!pedido) return { ok: false, error: "Pedido no encontrado" };
+  if (pedido.estado !== "anulado") {
+    return { ok: false, error: "Primero anula el pedido; solo se eliminan los anulados" };
+  }
+  memoria.epins = memoria.epins.filter((e) => e.pedido_id !== pedidoId);
+  memoria.pedidos = memoria.pedidos.filter((p) => p.id !== pedidoId);
+  return { ok: true };
+}
+
 /* ---------- cuentas de Fundador ---------- */
 
 export async function crearUsuario(datos: {

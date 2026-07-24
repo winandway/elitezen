@@ -4,6 +4,7 @@ import {
   claveDelPanel,
   confirmarPedido,
   contarPlazas,
+  eliminarPedido,
   listarPedidos,
 } from "@/lib/repositorio";
 
@@ -77,6 +78,11 @@ export async function POST(peticion: Request) {
       case "reabrir": {
         const hecho = await cambiarEstadoPedido(id, "pendiente");
         return NextResponse.json({ ok: hecho });
+      }
+      case "eliminar": {
+        const r = await eliminarPedido(id);
+        if (!r.ok) return NextResponse.json({ ok: false, error: r.error }, { status: 400 });
+        return NextResponse.json({ ok: true });
       }
       default:
         return NextResponse.json({ ok: false, error: "Acción desconocida" }, { status: 400 });

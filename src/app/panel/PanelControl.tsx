@@ -36,6 +36,7 @@ export default function PanelControl() {
   const [ocupadas, setOcupadas] = useState(0);
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
   const [confirmarAnular, setConfirmarAnular] = useState<Pedido | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<Pedido | null>(null);
   const [epinNuevo, setEpinNuevo] = useState<{ pedido: Pedido; epin: Epin } | null>(null);
   const [copiado, setCopiado] = useState(false);
 
@@ -66,7 +67,10 @@ export default function PanelControl() {
     if (guardada) cargar(guardada);
   }, [cargar]);
 
-  async function accion(accion: "confirmar" | "anular" | "reabrir", pedido: Pedido) {
+  async function accion(
+    accion: "confirmar" | "anular" | "reabrir" | "eliminar",
+    pedido: Pedido,
+  ) {
     if (!claveActiva) return;
     setMenuAbierto(null);
     setCargando(true);
@@ -285,15 +289,27 @@ export default function PanelControl() {
                     </div>
 
                     {menuAbierto === p.id && (
-                      <div className="absolute right-4 top-12 z-20 w-44 overflow-hidden rounded-xl border border-white/10 bg-navy-900 shadow-2xl">
+                      <div className="absolute right-4 top-12 z-20 w-52 overflow-hidden rounded-xl border border-white/10 bg-navy-900 shadow-2xl">
                         {p.estado === "anulado" ? (
-                          <button
-                            type="button"
-                            onClick={() => accion("reabrir", p)}
-                            className="block w-full px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-white/5"
-                          >
-                            Reabrir pedido
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => accion("reabrir", p)}
+                              className="block w-full px-4 py-2.5 text-left text-sm text-slate-200 transition hover:bg-white/5"
+                            >
+                              Reabrir pedido
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMenuAbierto(null);
+                                setConfirmarEliminar(p);
+                              }}
+                              className="block w-full px-4 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10"
+                            >
+                              Eliminar definitivamente
+                            </button>
+                          </>
                         ) : (
                           <button
                             type="button"
@@ -351,6 +367,47 @@ export default function PanelControl() {
                 className="flex-1 rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
               >
                 Sí, anular
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* modal: confirmación de eliminación definitiva */}
+      {confirmarEliminar && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-navy-900/80 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-white p-7 text-center">
+            <h3 className="font-display text-lg font-bold text-navy">
+              ¿Eliminar definitivamente?
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              {confirmarEliminar.nombre} · {confirmarEliminar.correo}
+            </p>
+            <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-700">
+              Esta acción borra el registro de la base de datos y no se puede
+              deshacer.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmarEliminar(null)}
+                className="flex-1 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-navy transition hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  accion("eliminar", confirmarEliminar);
+                  setConfirmarEliminar(null);
+                }}
+                className="flex-1 rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Sí, eliminar
               </button>
             </div>
           </div>
