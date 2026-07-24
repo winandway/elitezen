@@ -16,15 +16,78 @@ import type {
 
 /* ---------- obtención del binding ---------- */
 
+/** Esquema de la base (espejo de schema.sql). La app lo garantiza por sí
+ *  misma en el primer uso: no dependemos de que la plataforma lo ejecute. */
+const ESQUEMA = [
+  `CREATE TABLE IF NOT EXISTS pedidos (
+    id            TEXT PRIMARY KEY,
+    nombre        TEXT NOT NULL,
+    correo        TEXT NOT NULL,
+    pais          TEXT,
+    moneda        TEXT NOT NULL,
+    metodo        TEXT NOT NULL,
+    referencia    TEXT,
+    comprobante   TEXT,
+    referido_por  TEXT,
+    estado        TEXT NOT NULL DEFAULT 'pendiente',
+    creado_en     TEXT NOT NULL DEFAULT (datetime('now')),
+    confirmado_en TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON pedidos (estado)`,
+  `CREATE INDEX IF NOT EXISTS idx_pedidos_correo ON pedidos (correo)`,
+  `CREATE TABLE IF NOT EXISTS epins (
+    id           TEXT PRIMARY KEY,
+    codigo       TEXT NOT NULL UNIQUE,
+    pedido_id    TEXT NOT NULL,
+    correo       TEXT NOT NULL,
+    estado       TEXT NOT NULL DEFAULT 'emitido',
+    emitido_en   TEXT NOT NULL DEFAULT (datetime('now')),
+    activado_en  TEXT,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos (id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_epins_codigo ON epins (codigo)`,
+  `CREATE TABLE IF NOT EXISTS usuarios (
+    id          TEXT PRIMARY KEY,
+    nombre      TEXT NOT NULL,
+    correo      TEXT NOT NULL UNIQUE,
+    pais        TEXT,
+    clave_sal   TEXT NOT NULL,
+    clave_hash  TEXT NOT NULL,
+    creado_en   TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_usuarios_correo ON usuarios (correo)`,
+];
+
+let migracion: Promise<void> | null = null;
+
+function asegurarEsquema(db: D1Base): Promise<void> {
+  if (!migracion) {
+    migracion = (async () => {
+      for (const sentencia of ESQUEMA) {
+        await db.prepare(sentencia).run();
+      }
+    })().catch((e) => {
+      migracion = null; // permitir reintento en la próxima petición
+      throw e;
+    });
+  }
+  return migracion;
+}
+
 async function baseD1(): Promise<D1Base | null> {
+  let db: D1Base | undefined;
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
-    const ctx = getCloudflareContext();
-    const db = (ctx.env as Record<string, unknown>).DB as D1Base | undefined;
-    return db ?? null;
+    db = (getCloudflareContext().env as Record<string, unknown>).DB as
+      | D1Base
+      | undefined;
   } catch {
-    return null;
+    return null; // sin contexto de Cloudflare: desarrollo local (memoria)
   }
+  if (!db) return null;
+  // si la migración falla, el error debe VERSE (500), no caer a memoria
+  await asegurarEsquema(db);
+  return db;
 }
 
 /* ---------- memoria para desarrollo local ---------- */
