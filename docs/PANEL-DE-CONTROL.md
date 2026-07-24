@@ -57,8 +57,18 @@ variable, el panel muestra un aviso y no deja entrar a nadie.
 Se usa el prefijo `/datos` porque en YaDominios Cloud las rutas `/api/*`
 quedan capturadas por el enrutado de archivos estáticos.
 
-## Pendiente para automatizar del todo (futuro)
+## Correos automáticos (Resend)
 
-- Envío automático del correo con el ePIN (requiere una clave de Resend).
+Con la variable **`RESEND_API_KEY`** configurada (panel de YaDominios →
+Variables de entorno) y el dominio verificado en Resend, el sistema envía
+solo, desde `fundadores@elitezenacademy.com`:
+
+- **Bienvenida** al crear la cuenta de Fundador.
+- **El ePIN con el número de Fundador** al confirmar el pago desde el panel
+  (el modal muestra «✉️ ya se envió» o avisa si toca mandarlo a mano).
+
+Un fallo del correo nunca rompe el registro ni la confirmación.
+
+## Pendiente para automatizar del todo (futuro)
 - Webhook de Bold para confirmar pagos sin intervención manual.
 - API de SumUp (requiere credenciales del dueño) para lo mismo en euros.

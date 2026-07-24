@@ -5,6 +5,7 @@ import {
   hashDeClave,
   secretoDeSesion,
 } from "@/lib/auth";
+import { correoBienvenida } from "@/lib/correo";
 import { crearUsuario } from "@/lib/repositorio";
 
 const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -65,6 +66,14 @@ export async function POST(peticion: Request) {
       { id: r.usuario.id, correo: r.usuario.correo, nombre: r.usuario.nombre },
       secreto,
     );
+
+    // correo de bienvenida (si Resend está configurado; un fallo no rompe el registro)
+    try {
+      await correoBienvenida({ nombre: r.usuario.nombre, correo: r.usuario.correo });
+    } catch (e) {
+      console.error("Error enviando bienvenida:", e);
+    }
+
     return NextResponse.json(
       { ok: true, nombre: r.usuario.nombre },
       { headers: { "set-cookie": cabeceraCookieSesion(token) } },

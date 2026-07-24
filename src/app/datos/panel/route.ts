@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { correoEpin } from "@/lib/correo";
 import {
   cambiarEstadoPedido,
   claveDelPanel,
@@ -6,6 +7,8 @@ import {
   contarPlazas,
   eliminarPedido,
   listarPedidos,
+  numeroDeFundador,
+  usuarioPorCorreo,
 } from "@/lib/repositorio";
 
 export const dynamic = "force-dynamic";
@@ -68,8 +71,26 @@ export async function POST(peticion: Request) {
     switch (cuerpo.accion) {
       case "confirmar": {
         const r = await confirmarPedido(id);
-        if (!r.ok) return NextResponse.json({ ok: false, error: r.error }, { status: 404 });
-        return NextResponse.json({ ok: true, epin: r.epin });
+        if (!r.ok || !r.epin) {
+          return NextResponse.json({ ok: false, error: r.error }, { status: 404 });
+        }
+        // enviar el ePIN por correo (si Resend está configurado);
+        // si falla, la confirmación NO se pierde: queda el envío manual
+        let correoEnviado = false;
+        try {
+          const usuario = await usuarioPorCorreo(r.epin.correo);
+          const numero = await numeroDeFundador(r.epin.correo);
+          const envio = await correoEpin({
+            nombre: usuario?.nombre ?? "Fundador",
+            correo: r.epin.correo,
+            codigo: r.epin.codigo,
+            numero,
+          });
+          correoEnviado = envio.ok;
+        } catch (e) {
+          console.error("Error enviando el correo del ePIN:", e);
+        }
+        return NextResponse.json({ ok: true, epin: r.epin, correoEnviado });
       }
       case "anular": {
         const hecho = await cambiarEstadoPedido(id, "anulado");

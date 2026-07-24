@@ -37,7 +37,11 @@ export default function PanelControl() {
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
   const [confirmarAnular, setConfirmarAnular] = useState<Pedido | null>(null);
   const [confirmarEliminar, setConfirmarEliminar] = useState<Pedido | null>(null);
-  const [epinNuevo, setEpinNuevo] = useState<{ pedido: Pedido; epin: Epin } | null>(null);
+  const [epinNuevo, setEpinNuevo] = useState<{
+    pedido: Pedido;
+    epin: Epin;
+    correoEnviado: boolean;
+  } | null>(null);
   const [copiado, setCopiado] = useState(false);
 
   const cargar = useCallback(async (c: string) => {
@@ -82,7 +86,7 @@ export default function PanelControl() {
       });
       const d = await r.json();
       if (d.ok && accion === "confirmar" && d.epin) {
-        setEpinNuevo({ pedido, epin: d.epin });
+        setEpinNuevo({ pedido, epin: d.epin, correoEnviado: Boolean(d.correoEnviado) });
         setCopiado(false);
       }
       await cargar(claveActiva);
@@ -429,6 +433,18 @@ export default function PanelControl() {
             <p className="mt-4 rounded-2xl border-2 border-dashed border-gold-deep bg-cream px-4 py-5 font-mono text-2xl font-bold tracking-wider text-navy">
               {epinNuevo.epin.codigo}
             </p>
+
+            {epinNuevo.correoEnviado ? (
+              <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                ✉️ El ePIN ya se envió automáticamente a{" "}
+                {epinNuevo.pedido.correo}
+              </p>
+            ) : (
+              <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                El envío automático no está activo — usa «Enviar por correo»
+                para mandarlo tú mismo.
+              </p>
+            )}
             <div className="mt-5 flex gap-3">
               <button
                 type="button"
