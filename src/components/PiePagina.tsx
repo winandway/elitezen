@@ -33,7 +33,15 @@ export default function PiePagina() {
             @elitezenoficial
           </a>
           <p className="text-center text-xs text-slate-500 sm:text-right">
-            © {anio} Academia EliteZen. Todos los derechos reservados.
+            © {anio} elitezenacademy.com | All rights reserved. Developed by{" "}
+            <a
+              href="https://windoce.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-slate-400 transition hover:text-gold"
+            >
+              Windoce LLC
+            </a>
           </p>
         </div>
       </div>
