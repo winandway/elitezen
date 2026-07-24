@@ -12,6 +12,7 @@ export default function CtaFlotante() {
 
   useEffect(() => {
     const pago = document.getElementById("pago");
+    const pie = document.querySelector("footer");
 
     const alScroll = () => {
       const pasoElHero = window.scrollY > 620;
@@ -20,7 +21,12 @@ export default function CtaFlotante() {
         const r = pago.getBoundingClientRect();
         enZonaDePago = r.top < window.innerHeight * 0.9 && r.bottom > 0;
       }
-      setVisible(pasoElHero && !enZonaDePago);
+      /* al asomarse el pie de página, el botón se retira para no tapar nada */
+      let enPie = false;
+      if (pie) {
+        enPie = pie.getBoundingClientRect().top < window.innerHeight * 0.92;
+      }
+      setVisible(pasoElHero && !enZonaDePago && !enPie);
     };
 
     alScroll();

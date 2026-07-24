@@ -1,21 +1,31 @@
 import Image from "next/image";
+import Link from "next/link";
 import { REDES } from "@/lib/campana";
+
+const ENLACES = [
+  { texto: "Quiénes somos", href: "/quienes-somos" },
+  { texto: "Términos y condiciones", href: "/terminos" },
+  { texto: "Términos del registro", href: "/terminos-registro" },
+  { texto: "Política de privacidad", href: "/privacidad" },
+  { texto: "Política de cookies", href: "/cookies" },
+];
 
 export default function PiePagina() {
   const anio = 2026;
 
   return (
-    <footer className="border-t border-white/10 bg-navy-900">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 py-12 sm:flex-row sm:justify-between">
-        <Image
-          src="/logo-elitezen.png"
-          alt="Academia EliteZen"
-          width={1080}
-          height={941}
-          className="h-14 w-auto"
-        />
-
-        <div className="flex flex-col items-center gap-3 sm:items-end">
+    /* pb-28 en celular: aire para que el botón flotante no tape el crédito */
+    <footer className="border-t border-white/10 bg-navy-900 pb-28 sm:pb-10">
+      <div className="mx-auto max-w-6xl px-5 pt-12">
+        {/* marca */}
+        <div className="flex flex-col items-center gap-4">
+          <Image
+            src="/logo-elitezen.png"
+            alt="Academia EliteZen"
+            width={1080}
+            height={941}
+            className="h-16 w-auto"
+          />
           <a
             href={REDES.instagram}
             target="_blank"
@@ -32,7 +42,27 @@ export default function PiePagina() {
             </svg>
             @elitezenoficial
           </a>
-          <p className="text-center text-xs text-slate-500 sm:text-right">
+        </div>
+
+        {/* enlaces del sitio */}
+        <nav
+          aria-label="Enlaces del sitio"
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3"
+        >
+          {ENLACES.map((e) => (
+            <Link
+              key={e.href}
+              href={e.href}
+              className="text-sm text-slate-400 transition hover:text-gold"
+            >
+              {e.texto}
+            </Link>
+          ))}
+        </nav>
+
+        {/* crédito */}
+        <div className="mt-8 border-t border-white/10 pt-6 text-center">
+          <p className="text-xs leading-relaxed text-slate-500">
             © {anio} elitezenacademy.com | All rights reserved. Developed by{" "}
             <a
               href="https://windoce.com"
