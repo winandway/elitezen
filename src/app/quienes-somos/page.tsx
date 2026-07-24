@@ -19,6 +19,17 @@ export default function QuienesSomos() {
       </p>
 
       <h2 className="pt-3 font-display text-xl font-bold text-white">
+        Nuestras especialidades
+      </h2>
+      <p>
+        La Academia concentra su formación en cuatro especialidades con futuro:{" "}
+        <span className="font-semibold text-white">network marketing</span>,{" "}
+        <span className="font-semibold text-white">inteligencia artificial</span>,{" "}
+        <span className="font-semibold text-white">tecnología blockchain</span> e{" "}
+        <span className="font-semibold text-white">inteligencia financiera</span>.
+      </p>
+
+      <h2 className="pt-3 font-display text-xl font-bold text-white">
         Nuestra misión
       </h2>
       <p>

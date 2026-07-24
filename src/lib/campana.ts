@@ -68,17 +68,24 @@ export const BENEFICIOS = [
   },
 ];
 
-export const AREAS = [
-  "Desarrollo Personal",
-  "Liderazgo",
-  "Network Marketing Profesional",
-  "Inteligencia Artificial",
-  "Tecnología",
-  "Blockchain",
-  "Educación Financiera",
-  "Salud Integral",
-  "Emprendimiento",
-  "Comunidad Internacional",
+/** Las especialidades de la Academia (definidas por el dueño). */
+export const ESPECIALIDADES = [
+  {
+    titulo: "Network Marketing",
+    texto: "Construye y lidera redes sólidas con estrategia, método y ética.",
+  },
+  {
+    titulo: "Inteligencia Artificial",
+    texto: "Domina las herramientas que están transformando el trabajo y los negocios.",
+  },
+  {
+    titulo: "Tecnología Blockchain",
+    texto: "Comprende y aprovecha la economía digital descentralizada.",
+  },
+  {
+    titulo: "Inteligencia Financiera",
+    texto: "Aprende a generar, administrar y multiplicar tus ingresos.",
+  },
 ];
 
 export const VISION = [

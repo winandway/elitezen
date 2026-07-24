@@ -1,7 +1,7 @@
 import Image from "next/image";
 import PlazasEnLinea from "./PlazasEnLinea";
 import Revelar from "./Revelar";
-import { AREAS, BENEFICIOS, FIRMAS, VISION } from "@/lib/campana";
+import { BENEFICIOS, ESPECIALIDADES, FIRMAS, VISION } from "@/lib/campana";
 
 /* ---------- piezas pequeñas ---------- */
 
@@ -20,16 +20,50 @@ function Check() {
   );
 }
 
-/** Marca decorativa dorada, eco del logo */
-function Hoja({ claro = false }: { claro?: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" aria-hidden="true">
-      <path
-        d="M12 3c3 3.6 5 6.4 5 9.2A5 5 0 0 1 7 12.2C7 9.4 9 6.6 12 3z"
-        fill={claro ? "var(--color-gold-deep)" : "var(--color-gold)"}
-      />
-    </svg>
-  );
+/** Iconos de las especialidades (trazo dorado, estilo de la marca) */
+function IconoEspecialidad({ indice }: { indice: number }) {
+  const comun = {
+    className: "h-9 w-9",
+    fill: "none",
+    stroke: "var(--color-gold-deep)",
+    strokeWidth: 1.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (indice) {
+    case 0: // Network Marketing: red de personas conectadas
+      return (
+        <svg viewBox="0 0 32 32" {...comun} aria-hidden="true">
+          <circle cx="16" cy="8" r="3.2" />
+          <circle cx="7" cy="23" r="3.2" />
+          <circle cx="25" cy="23" r="3.2" />
+          <path d="M13.8 10.5 9 20.2M18.2 10.5 23 20.2M10.2 23h11.6" />
+        </svg>
+      );
+    case 1: // Inteligencia Artificial: chip
+      return (
+        <svg viewBox="0 0 32 32" {...comun} aria-hidden="true">
+          <rect x="9" y="9" width="14" height="14" rx="3" />
+          <path d="M13 13h6v6h-6zM16 4v5M16 23v5M4 16h5M23 16h5M8 8l3 3M24 8l-3 3M8 24l3-3M24 24l-3-3" />
+        </svg>
+      );
+    case 2: // Blockchain: bloques enlazados
+      return (
+        <svg viewBox="0 0 32 32" {...comun} aria-hidden="true">
+          <rect x="4" y="12" width="8" height="8" rx="2" />
+          <rect x="20" y="12" width="8" height="8" rx="2" />
+          <path d="M12 16h8M16 12V6a2 2 0 0 1 2-2h4M16 20v6a2 2 0 0 1-2 2h-4" />
+        </svg>
+      );
+    default: // Inteligencia Financiera: gráfica que crece
+      return (
+        <svg viewBox="0 0 32 32" {...comun} aria-hidden="true">
+          <path d="M5 27V5M5 27h22" />
+          <path d="M9 21l5-6 4 3 7-9" />
+          <path d="M25 9h-4.5M25 9v4.5" />
+        </svg>
+      );
+  }
 }
 
 /* ---------- BANNER DE COMUNIDAD ---------- */
@@ -85,9 +119,13 @@ export function PorQueSerFundador() {
             <div className="mt-8 space-y-5 text-base leading-relaxed text-slate-300 sm:text-lg">
               <p>
                 Como Fundador de Academia EliteZen formarás parte de una
-                comunidad internacional comprometida con el aprendizaje, el
-                crecimiento personal, la tecnología, el liderazgo, el
-                emprendimiento y la colaboración.
+                comunidad internacional que se forma en lo que de verdad mueve
+                el presente:{" "}
+                <span className="font-semibold text-white">
+                  network marketing, inteligencia artificial, tecnología
+                  blockchain e inteligencia financiera
+                </span>
+                .
               </p>
               <p>
                 Además, disfrutarás de unas ventajas exclusivas que{" "}
@@ -213,8 +251,7 @@ export function QueEsEliteZen() {
             <div className="filete-oro mx-auto mt-5" />
             <p className="mt-6 text-lg leading-relaxed text-slate-600">
               Nace como una plataforma internacional de aprendizaje y
-              crecimiento: un espacio donde personas de distintos países podrán
-              desarrollarse en áreas como
+              crecimiento, enfocada en cuatro especialidades con futuro:
             </p>
           </div>
         </Revelar>
@@ -267,14 +304,17 @@ export function QueEsEliteZen() {
           ))}
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {AREAS.map((area, i) => (
-            <Revelar key={area} retraso={i * 45}>
-              <div className="flex h-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3.5 transition hover:border-gold-deep/40 hover:bg-white">
-                <Hoja claro />
-                <span className="font-display text-sm font-semibold text-navy">
-                  {area}
-                </span>
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {ESPECIALIDADES.map((e, i) => (
+            <Revelar key={e.titulo} retraso={i * 80}>
+              <div className="flex h-full flex-col items-center rounded-2xl border border-slate-200 bg-slate-50/70 px-5 py-7 text-center transition hover:border-gold-deep/40 hover:bg-white hover:shadow-[0_16px_40px_-24px_rgba(23,35,56,0.35)]">
+                <IconoEspecialidad indice={i} />
+                <h3 className="mt-4 font-display text-base font-bold text-navy">
+                  {e.titulo}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {e.texto}
+                </p>
               </div>
             </Revelar>
           ))}

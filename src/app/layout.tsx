@@ -21,13 +21,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: "Academia EliteZen — Campaña de Fundadores",
   description:
-    "Forma parte de los 100 Fundadores de Academia EliteZen. Participa desde el inicio en una plataforma internacional de aprendizaje, crecimiento y comunidad.",
+    "Forma parte de los 100 Fundadores de Academia EliteZen: formación en network marketing, inteligencia artificial, tecnología blockchain e inteligencia financiera.",
   keywords: [
     "Academia EliteZen",
     "Fundadores",
-    "educación",
-    "crecimiento personal",
-    "comunidad",
+    "network marketing",
+    "inteligencia artificial",
+    "blockchain",
+    "inteligencia financiera",
   ],
   openGraph: {
     type: "website",
