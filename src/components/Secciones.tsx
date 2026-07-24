@@ -31,36 +31,102 @@ function Hoja({ claro = false }: { claro?: boolean }) {
   );
 }
 
+/* ---------- BANNER DE COMUNIDAD ---------- */
+
+export function BannerComunidad() {
+  return (
+    <section aria-label="Comunidad EliteZen" className="relative">
+      <Image
+        src="/img/banner-comunidad.jpg"
+        alt="Comunidad de personas aprendiendo y colaborando"
+        width={1280}
+        height={300}
+        className="h-40 w-full object-cover sm:h-56 lg:h-72"
+        sizes="100vw"
+      />
+      {/* velo de marca para integrar la foto con el azul */}
+      <div
+        className="absolute inset-0"
+        aria-hidden="true"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(23,35,56,0.55) 0%, rgba(23,35,56,0.15) 45%, rgba(23,35,56,0.75) 100%)",
+        }}
+      />
+      <div className="absolute inset-0 flex items-end justify-center pb-5">
+        <p className="wordmark px-4 text-center text-[11px] text-gold sm:text-sm">
+          Una comunidad internacional desde el día uno
+        </p>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- ¿POR QUÉ SER FUNDADOR? ---------- */
 
 export function PorQueSerFundador() {
   return (
     <section id="por-que" className="relative py-20 sm:py-24">
-      <div className="mx-auto max-w-3xl px-5 text-center">
-        <Revelar>
-          <p className="wordmark text-[11px] text-gold">¿Por qué ser Fundador?</p>
-          <h2 className="mt-4 font-display text-2xl font-bold text-white sm:text-4xl">
-            Las grandes oportunidades se reservan para quienes creen{" "}
-            <span className="text-gold-gradient">desde el comienzo</span>
-          </h2>
-          <div className="filete-oro mx-auto mt-6" />
-        </Revelar>
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-2">
+        <div>
+          <Revelar>
+            <p className="wordmark text-[11px] text-gold">
+              ¿Por qué ser Fundador?
+            </p>
+            <h2 className="mt-4 font-display text-2xl font-bold text-white sm:text-4xl">
+              Las grandes oportunidades se reservan para quienes creen{" "}
+              <span className="text-gold-gradient">desde el comienzo</span>
+            </h2>
+            <div className="filete-oro mt-6" />
+          </Revelar>
 
-        <Revelar retraso={100}>
-          <div className="mt-8 space-y-5 text-base leading-relaxed text-slate-300 sm:text-lg">
-            <p>
-              Como Fundador de Academia EliteZen formarás parte de una comunidad
-              internacional comprometida con el aprendizaje, el crecimiento
-              personal, la tecnología, el liderazgo, el emprendimiento y la
-              colaboración.
-            </p>
-            <p>
-              Además, disfrutarás de unas ventajas exclusivas que{" "}
-              <span className="font-semibold text-white">
-                no volverán a ofrecerse
-              </span>{" "}
-              una vez finalizada esta campaña.
-            </p>
+          <Revelar retraso={100}>
+            <div className="mt-8 space-y-5 text-base leading-relaxed text-slate-300 sm:text-lg">
+              <p>
+                Como Fundador de Academia EliteZen formarás parte de una
+                comunidad internacional comprometida con el aprendizaje, el
+                crecimiento personal, la tecnología, el liderazgo, el
+                emprendimiento y la colaboración.
+              </p>
+              <p>
+                Además, disfrutarás de unas ventajas exclusivas que{" "}
+                <span className="font-semibold text-white">
+                  no volverán a ofrecerse
+                </span>{" "}
+                una vez finalizada esta campaña.
+              </p>
+            </div>
+          </Revelar>
+        </div>
+
+        {/* Composición de dos fotos: profesores compartiendo conocimiento */}
+        <Revelar retraso={150} className="relative mx-auto w-full max-w-md lg:max-w-none">
+          <div className="relative pb-14 pr-14">
+            <Image
+              src="/img/profesor-clase.jpg"
+              alt="Profesor compartiendo una clase con su grupo"
+              width={640}
+              height={640}
+              className="w-full rounded-3xl border border-white/10 object-cover"
+              sizes="(min-width: 1024px) 480px, 90vw"
+            />
+            <Image
+              src="/img/formadora-equipo.jpg"
+              alt="Formadora guiando a un equipo frente a un tablero"
+              width={640}
+              height={640}
+              className="absolute bottom-0 right-0 w-1/2 rounded-2xl border-4 border-navy object-cover shadow-2xl"
+              sizes="240px"
+            />
+            <div
+              className="absolute -left-3 -top-3 -z-10 h-28 w-28 rounded-3xl"
+              aria-hidden="true"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--color-gold), transparent 70%)",
+                opacity: 0.35,
+              }}
+            />
           </div>
         </Revelar>
       </div>
@@ -152,6 +218,54 @@ export function QueEsEliteZen() {
           </div>
         </Revelar>
 
+        {/* Mosaico: así se vive la Academia */}
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {[
+            {
+              src: "/img/aprende-en-casa.jpg",
+              alt: "Estudiante sonriendo mientras aprende desde su computadora",
+              pie: "Aprende desde donde estés",
+            },
+            {
+              src: "/img/profesora-pizarra.jpg",
+              alt: "Profesora explicando una lección frente a la pizarra",
+              pie: "Expertos que enseñan",
+            },
+            {
+              src: "/img/curso-online.jpg",
+              alt: "Persona siguiendo un curso online desde su laptop",
+              pie: "Cursos 100% online",
+            },
+            {
+              src: "/img/aprendizaje-tablet.jpg",
+              alt: "Hombre estudiando contenido en una tablet",
+              pie: "A tu propio ritmo",
+            },
+          ].map((f, i) => (
+            <Revelar key={f.src} retraso={i * 70}>
+              <figure className="group relative overflow-hidden rounded-2xl">
+                <Image
+                  src={f.src}
+                  alt={f.alt}
+                  width={640}
+                  height={640}
+                  className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 280px, 45vw"
+                />
+                <figcaption
+                  className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-8 text-xs font-semibold text-white"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent, rgba(23,35,56,0.85))",
+                  }}
+                >
+                  {f.pie}
+                </figcaption>
+              </figure>
+            </Revelar>
+          ))}
+        </div>
+
         <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {AREAS.map((area, i) => (
             <Revelar key={area} retraso={i * 45}>
@@ -183,9 +297,9 @@ export function QueEsEliteZen() {
 export function Vision() {
   return (
     <section id="vision" className="bg-cream py-20 sm:py-24">
-      <div className="mx-auto max-w-3xl px-5">
+      <div className="mx-auto max-w-6xl px-5">
         <Revelar>
-          <div className="text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <p className="wordmark text-[11px] text-oro-oscuro">A dónde vamos</p>
             <h2 className="mt-4 font-display text-3xl font-extrabold text-navy sm:text-4xl">
               Nuestra visión a cinco años
@@ -198,20 +312,44 @@ export function Vision() {
           </div>
         </Revelar>
 
-        <ol className="mt-10 space-y-4">
-          {VISION.map((punto, i) => (
-            <Revelar key={punto} retraso={i * 80}>
-              <li className="flex items-start gap-4 rounded-2xl border border-navy/10 bg-white px-5 py-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy font-display text-sm font-bold text-gold">
-                  {i + 1}
-                </span>
-                <span className="pt-1.5 leading-relaxed text-slate-700">
-                  {punto}
-                </span>
-              </li>
-            </Revelar>
-          ))}
-        </ol>
+        <div className="mt-10 grid items-center gap-10 lg:grid-cols-2">
+          <ol className="space-y-4">
+            {VISION.map((punto, i) => (
+              <Revelar key={punto} retraso={i * 80}>
+                <li className="flex items-start gap-4 rounded-2xl border border-navy/10 bg-white px-5 py-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy font-display text-sm font-bold text-gold">
+                    {i + 1}
+                  </span>
+                  <span className="pt-1.5 leading-relaxed text-slate-700">
+                    {punto}
+                  </span>
+                </li>
+              </Revelar>
+            ))}
+          </ol>
+
+          <Revelar retraso={200} className="mx-auto w-full max-w-md">
+            <figure className="relative overflow-hidden rounded-3xl">
+              <Image
+                src="/img/mentoria.jpg"
+                alt="Mentora acompañando el aprendizaje de otra persona"
+                width={640}
+                height={640}
+                className="aspect-square w-full object-cover"
+                sizes="(min-width: 1024px) 440px, 90vw"
+              />
+              <figcaption
+                className="absolute inset-x-0 bottom-0 px-5 pb-4 pt-12 text-sm font-semibold text-white"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent, rgba(23,35,56,0.85))",
+                }}
+              >
+                Crecer acompañado, desde el primer día
+              </figcaption>
+            </figure>
+          </Revelar>
+        </div>
       </div>
     </section>
   );
@@ -271,7 +409,18 @@ export function MensajeFundador() {
             <p className="wordmark text-[11px] text-gold">Mensaje del fundador</p>
           </div>
 
-          <blockquote className="mt-8 space-y-5 text-center text-lg leading-relaxed text-slate-200 sm:text-xl">
+          <figure className="mx-auto mt-8 max-w-xl overflow-hidden rounded-3xl">
+            <Image
+              src="/img/taller-grupo.jpg"
+              alt="Sesión de formación con un grupo alrededor de la mesa"
+              width={640}
+              height={640}
+              className="aspect-[16/9] w-full object-cover"
+              sizes="(min-width: 640px) 576px, 90vw"
+            />
+          </figure>
+
+          <blockquote className="mt-10 space-y-5 text-center text-lg leading-relaxed text-slate-200 sm:text-xl">
             <p>
               Durante más de catorce años hemos construido una comunidad basada
               en la formación, la colaboración y el crecimiento personal. Hoy

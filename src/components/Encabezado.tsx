@@ -15,11 +15,12 @@ export default function Encabezado() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 z-50 transition-all duration-500 ${
         compacto
           ? "border-b border-white/10 bg-navy/90 backdrop-blur-md"
           : "border-b border-transparent"
       }`}
+      style={{ top: "var(--alto-barra, 0px)" }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <a href="#inicio" aria-label="Academia EliteZen — ir al inicio">
