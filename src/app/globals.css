@@ -34,6 +34,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* deja aire bajo la cabecera fija al saltar a un ancla */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -100,3 +102,43 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .rise { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Botón dorado en versión contorno (para secciones claras) */
+.btn-gold-outline {
+  border: 1.5px solid var(--color-gold-deep);
+  color: var(--color-navy);
+  font-weight: 700;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.btn-gold-outline:hover {
+  background: var(--color-gold);
+  color: var(--color-navy-900);
+}
+
+/* Filete dorado decorativo */
+.filete-oro {
+  height: 2px;
+  width: 64px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* Texto dorado sólido para fondos claros (el degradado se pierde en blanco) */
+.text-oro-oscuro { color: var(--color-gold-deep); }
+
+/* Aparición al entrar en pantalla */
+.revelar {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.revelar.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { animation: none; }
+  .revelar { opacity: 1; transform: none; transition: none; }
+}

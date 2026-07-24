@@ -53,6 +53,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${montserrat.variable} ${inter.variable}`}>
+      <head>
+        {/* Si el visitante no tiene JavaScript, el contenido se ve igual */}
+        <noscript>
+          <style>{`.revelar{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
       <body className="min-h-full">{children}</body>
     </html>
   );
