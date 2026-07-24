@@ -197,7 +197,7 @@ export default function AreaFundador() {
                 Tus beneficios de Fundador
               </h2>
               <ul className="mt-3 space-y-2 text-sm text-slate-300">
-                <li>· Precio de 49 garantizado durante 3 años</li>
+                <li>· Precio de tu membresía garantizado durante 3 años</li>
                 <li>· 20% de descuento en cursos, eventos y conferencias</li>
                 <li>· Participación del 2% de las membresías</li>
                 <li>· Comisiones del 20% y 10% desde el primer día</li>

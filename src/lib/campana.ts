@@ -12,7 +12,7 @@ export const CAMPANA = {
 
 export const PRECIOS = {
   eur: { importe: "49 €", moneda: "EUR", nota: "IVA incluido" },
-  usd: { importe: "49 USD", moneda: "USD", nota: "IVA incluido" },
+  usd: { importe: "56 USD", moneda: "USD", nota: "IVA incluido" },
 };
 
 export const ENLACES_PAGO = {
@@ -39,8 +39,8 @@ export const REDES = {
 export const BENEFICIOS = [
   {
     titulo: "Membresía Fundador",
-    destacado: "49 € IVA incluido",
-    texto: "Precio garantizado durante 3 años.",
+    destacado: "49 € · 56 USD",
+    texto: "IVA incluido. Precio garantizado durante 3 años.",
   },
   {
     titulo: "Descuentos exclusivos",
