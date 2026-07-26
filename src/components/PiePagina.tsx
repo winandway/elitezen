@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { REDES } from "@/lib/campana";
+import { EMPRESA, REDES } from "@/lib/campana";
 
 const ENLACES = [
   { texto: "Quiénes somos", href: "/quienes-somos" },
@@ -41,6 +41,12 @@ export default function PiePagina() {
               <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
             </svg>
             @elitezenoficial
+          </a>
+          <a
+            href={`mailto:${EMPRESA.correo}`}
+            className="text-sm text-slate-400 transition hover:text-gold"
+          >
+            {EMPRESA.correo}
           </a>
         </div>
 

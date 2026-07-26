@@ -36,6 +36,14 @@ export const REDES = {
   instagram: "https://instagram.com/elitezenoficial",
 };
 
+/** Datos legales del prestador (autorizados por el dueño, 2026-07-26). */
+export const EMPRESA = {
+  nombre: "Evolution Community Global, S.L.",
+  cif: "B05431614",
+  correo: "evolutioncommunityglobal@gmail.com",
+  pais: "España",
+};
+
 export const BENEFICIOS = [
   {
     titulo: "Membresía Fundador",
