@@ -346,6 +346,32 @@ export async function eliminarPedido(
   return { ok: true };
 }
 
+/** Borra una cuenta que NO tenga pedidos (solo filas «sin reserva»). */
+export async function eliminarCuenta(
+  correo: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const c = correo.trim().toLowerCase();
+  const db = await baseD1();
+
+  if (db) {
+    const conPedidos = await db
+      .prepare("SELECT COUNT(*) AS n FROM pedidos WHERE correo = ?")
+      .bind(c)
+      .first<{ n: number }>();
+    if ((conPedidos?.n ?? 0) > 0) {
+      return { ok: false, error: "Esta cuenta tiene pedidos; gestiona el pedido en su fila" };
+    }
+    await db.prepare("DELETE FROM usuarios WHERE correo = ?").bind(c).run();
+    return { ok: true };
+  }
+
+  if (memoria.pedidos.some((p) => p.correo === c)) {
+    return { ok: false, error: "Esta cuenta tiene pedidos; gestiona el pedido en su fila" };
+  }
+  memoria.usuarios = memoria.usuarios.filter((u) => u.correo !== c);
+  return { ok: true };
+}
+
 /* ---------- cuentas de Fundador ---------- */
 
 export async function crearUsuario(datos: {

@@ -5,6 +5,7 @@ import {
   claveDelPanel,
   confirmarPedido,
   contarPlazas,
+  eliminarCuenta,
   eliminarPedido,
   listarPedidos,
   listarUsuarios,
@@ -84,11 +85,27 @@ export async function POST(peticion: Request) {
   const bloqueo = await autorizado(peticion);
   if (bloqueo) return bloqueo;
 
-  let cuerpo: { accion?: string; id?: string };
+  let cuerpo: { accion?: string; id?: string; correo?: string };
   try {
     cuerpo = await peticion.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Cuerpo inválido" }, { status: 400 });
+  }
+
+  // eliminar una cuenta sin reserva (se identifica por correo, no por pedido)
+  if (cuerpo.accion === "eliminar-cuenta") {
+    const correo = String(cuerpo.correo ?? "");
+    if (!correo) {
+      return NextResponse.json({ ok: false, error: "Falta el correo" }, { status: 400 });
+    }
+    try {
+      const r = await eliminarCuenta(correo);
+      if (!r.ok) return NextResponse.json({ ok: false, error: r.error }, { status: 400 });
+      return NextResponse.json({ ok: true });
+    } catch (e) {
+      console.error("Error eliminando cuenta:", e);
+      return NextResponse.json({ ok: false, error: "Error escribiendo en la base" }, { status: 500 });
+    }
   }
 
   const id = String(cuerpo.id ?? "");

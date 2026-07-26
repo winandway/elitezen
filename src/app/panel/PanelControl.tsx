@@ -43,6 +43,7 @@ export default function PanelControl() {
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
   const [confirmarAnular, setConfirmarAnular] = useState<FilaPanel | null>(null);
   const [confirmarEliminar, setConfirmarEliminar] = useState<FilaPanel | null>(null);
+  const [confirmarCuenta, setConfirmarCuenta] = useState<FilaPanel | null>(null);
   const [epinNuevo, setEpinNuevo] = useState<{
     pedido: FilaPanel;
     epin: Epin;
@@ -78,7 +79,7 @@ export default function PanelControl() {
   }, [cargar]);
 
   async function accion(
-    accion: "confirmar" | "anular" | "reabrir" | "eliminar",
+    accion: "confirmar" | "anular" | "reabrir" | "eliminar" | "eliminar-cuenta",
     pedido: FilaPanel,
   ) {
     if (!claveActiva) return;
@@ -88,7 +89,11 @@ export default function PanelControl() {
       const r = await fetch("/datos/panel", {
         method: "POST",
         headers: { "content-type": "application/json", "x-clave": claveActiva },
-        body: JSON.stringify({ accion, id: pedido.id }),
+        body: JSON.stringify(
+          accion === "eliminar-cuenta"
+            ? { accion, correo: pedido.correo }
+            : { accion, id: pedido.id },
+        ),
       });
       const d = await r.json();
       if (d.ok && accion === "confirmar" && d.epin) {
@@ -276,9 +281,39 @@ export default function PanelControl() {
                   <td className="px-4 py-3 text-xs text-slate-400">{p.creado_en}</td>
                   <td className="relative px-4 py-3">
                     {p.estado === "sin-reserva" ? (
-                      <p className="text-right text-xs text-slate-500">
-                        Aún no reserva su plaza
-                      </p>
+                      <div className="flex items-center justify-end gap-2">
+                        <span className="text-xs text-slate-500">
+                          Aún no reserva su plaza
+                        </span>
+                        <button
+                          type="button"
+                          aria-label="Más opciones"
+                          onClick={() =>
+                            setMenuAbierto(menuAbierto === p.id ? null : p.id)
+                          }
+                          className="rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
+                        >
+                          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="5" r="1.8" />
+                            <circle cx="12" cy="12" r="1.8" />
+                            <circle cx="12" cy="19" r="1.8" />
+                          </svg>
+                        </button>
+                        {menuAbierto === p.id && (
+                          <div className="absolute right-4 top-12 z-20 w-52 overflow-hidden rounded-xl border border-white/10 bg-navy-900 shadow-2xl">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMenuAbierto(null);
+                                setConfirmarCuenta(p);
+                              }}
+                              className="block w-full px-4 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10"
+                            >
+                              Eliminar cuenta
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                     <>
                     <div className="flex items-center justify-end gap-2">
@@ -426,6 +461,47 @@ export default function PanelControl() {
                 onClick={() => {
                   accion("eliminar", confirmarEliminar);
                   setConfirmarEliminar(null);
+                }}
+                className="flex-1 rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Sí, eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* modal: confirmación de eliminación de cuenta sin reserva */}
+      {confirmarCuenta && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-navy-900/80 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-white p-7 text-center">
+            <h3 className="font-display text-lg font-bold text-navy">
+              ¿Eliminar esta cuenta?
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              {confirmarCuenta.nombre} · {confirmarCuenta.correo}
+            </p>
+            <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-700">
+              Se borra la cuenta de la base de datos y no se puede deshacer.
+              La persona tendría que registrarse de nuevo.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmarCuenta(null)}
+                className="flex-1 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-navy transition hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  accion("eliminar-cuenta", confirmarCuenta);
+                  setConfirmarCuenta(null);
                 }}
                 className="flex-1 rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
               >
