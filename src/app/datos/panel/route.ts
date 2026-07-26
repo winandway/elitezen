@@ -7,6 +7,7 @@ import {
   contarPlazas,
   eliminarPedido,
   listarPedidos,
+  listarUsuarios,
   numeroDeFundador,
   usuarioPorCorreo,
 } from "@/lib/repositorio";
@@ -33,15 +34,43 @@ async function autorizado(peticion: Request): Promise<NextResponse | null> {
   return null;
 }
 
-/** Lista de pedidos + resumen (requiere clave). */
+/** Lista de registros + resumen (requiere clave).
+ *  Muestra a TODA persona registrada: con reserva (pedido) o solo con
+ *  cuenta creada (aparece como «sin reserva»). */
 export async function GET(peticion: Request) {
   const bloqueo = await autorizado(peticion);
   if (bloqueo) return bloqueo;
 
   try {
-    const [pedidos, plazas] = await Promise.all([listarPedidos(), contarPlazas()]);
+    const [pedidos, usuarios, plazas] = await Promise.all([
+      listarPedidos(),
+      listarUsuarios(),
+      contarPlazas(),
+    ]);
+
+    const correosConPedido = new Set(pedidos.map((p) => p.correo));
+    const filas = [
+      ...pedidos,
+      ...usuarios
+        .filter((u) => !correosConPedido.has(u.correo))
+        .map((u) => ({
+          id: `cuenta-${u.id}`,
+          nombre: u.nombre,
+          correo: u.correo,
+          pais: u.pais,
+          moneda: "",
+          metodo: "",
+          referencia: null,
+          comprobante: null,
+          referido_por: null,
+          estado: "sin-reserva",
+          creado_en: u.creado_en,
+          confirmado_en: null,
+        })),
+    ].sort((a, b) => (b.creado_en ?? "").localeCompare(a.creado_en ?? ""));
+
     return NextResponse.json(
-      { ok: true, pedidos, ocupadas: plazas.ocupadas },
+      { ok: true, pedidos: filas, ocupadas: plazas.ocupadas },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (e) {

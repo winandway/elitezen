@@ -390,6 +390,17 @@ export async function crearUsuario(datos: {
   return { ok: true, usuario };
 }
 
+export async function listarUsuarios(): Promise<Usuario[]> {
+  const db = await baseD1();
+  if (db) {
+    const { results } = await db
+      .prepare("SELECT * FROM usuarios ORDER BY creado_en DESC LIMIT 500")
+      .all<Usuario>();
+    return results;
+  }
+  return memoria.usuarios;
+}
+
 export async function usuarioPorCorreo(correo: string): Promise<Usuario | null> {
   const c = correo.trim().toLowerCase();
   const db = await baseD1();

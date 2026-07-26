@@ -17,12 +17,13 @@ function ChipEstado({ estado }: { estado: string }) {
     pendiente: "bg-amber-100 text-amber-800",
     pagado: "bg-emerald-100 text-emerald-800",
     anulado: "bg-slate-200 text-slate-600",
+    "sin-reserva": "bg-sky-100 text-sky-800",
   };
   return (
     <span
-      className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${estilos[estado] ?? ""}`}
+      className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${estilos[estado] ?? ""}`}
     >
-      {estado}
+      {estado === "sin-reserva" ? "sin reserva" : estado}
     </span>
   );
 }
@@ -259,12 +260,22 @@ export default function PanelControl() {
                   <td className="px-4 py-3 font-medium text-white">{p.nombre}</td>
                   <td className="px-4 py-3">{p.correo}</td>
                   <td className="px-4 py-3">{p.pais ?? "—"}</td>
-                  <td className="px-4 py-3">{ETIQUETA_METODO[p.metodo] ?? p.metodo}</td>
+                  <td className="px-4 py-3">
+                    {p.estado === "sin-reserva"
+                      ? "—"
+                      : (ETIQUETA_METODO[p.metodo] ?? p.metodo)}
+                  </td>
                   <td className="px-4 py-3">
                     <ChipEstado estado={p.estado} />
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-400">{p.creado_en}</td>
                   <td className="relative px-4 py-3">
+                    {p.estado === "sin-reserva" ? (
+                      <p className="text-right text-xs text-slate-500">
+                        Aún no reserva su plaza
+                      </p>
+                    ) : (
+                    <>
                     <div className="flex items-center justify-end gap-2">
                       {p.estado === "pendiente" && (
                         <button
@@ -327,6 +338,8 @@ export default function PanelControl() {
                           </button>
                         )}
                       </div>
+                    )}
+                    </>
                     )}
                   </td>
                 </tr>
