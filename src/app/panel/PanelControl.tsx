@@ -5,6 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { CAMPANA } from "@/lib/campana";
 import type { Epin, Pedido } from "@/lib/tipos";
 
+/** Fila del panel: un pedido real o una cuenta aún sin reserva. */
+type FilaPanel = Omit<Pedido, "estado"> & {
+  estado: Pedido["estado"] | "sin-reserva";
+};
+
 const ETIQUETA_METODO: Record<string, string> = {
   sumup: "SumUp (EUR)",
   bold: "Bold (USD)",
@@ -33,13 +38,13 @@ export default function PanelControl() {
   const [claveActiva, setClaveActiva] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [pedidos, setPedidos] = useState<FilaPanel[]>([]);
   const [ocupadas, setOcupadas] = useState(0);
   const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
-  const [confirmarAnular, setConfirmarAnular] = useState<Pedido | null>(null);
-  const [confirmarEliminar, setConfirmarEliminar] = useState<Pedido | null>(null);
+  const [confirmarAnular, setConfirmarAnular] = useState<FilaPanel | null>(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState<FilaPanel | null>(null);
   const [epinNuevo, setEpinNuevo] = useState<{
-    pedido: Pedido;
+    pedido: FilaPanel;
     epin: Epin;
     correoEnviado: boolean;
   } | null>(null);
@@ -74,7 +79,7 @@ export default function PanelControl() {
 
   async function accion(
     accion: "confirmar" | "anular" | "reabrir" | "eliminar",
-    pedido: Pedido,
+    pedido: FilaPanel,
   ) {
     if (!claveActiva) return;
     setMenuAbierto(null);
