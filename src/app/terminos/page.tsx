@@ -39,7 +39,7 @@ export default function Terminos() {
       <p>
         <span className="font-semibold text-white">Academia EliteZen</span> es
         el proyecto educativo digital de Evolution Community, una comunidad de
-        formación con más de dos décadas de trayectoria. La Academia siempre ha
+        formación con más de catorce años de trayectoria. La Academia siempre ha
         operado de forma digital (clases y eventos en directo a través de
         videoconferencia y otras plataformas) y ahora lanza su propia
         plataforma en línea, donde sus miembros podrán acceder a los cursos y
