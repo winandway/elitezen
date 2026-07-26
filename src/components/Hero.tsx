@@ -23,7 +23,10 @@ export default function Hero() {
             Campaña de Fundadores
           </p>
 
-          <h1 className="rise mt-5 font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-white sm:text-5xl">
+          {/* Contador de plazas en vivo — la pieza más importante, arriba */}
+          <ContadorPlazas />
+
+          <h1 className="rise mt-9 font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-white sm:text-5xl">
             Forma parte de los{" "}
             <span className="text-gold-gradient">100 Fundadores</span> de
             Academia EliteZen
@@ -45,8 +48,6 @@ export default function Hero() {
             </a>
           </div>
 
-          {/* Contador de plazas en vivo (lee la base de datos) */}
-          <ContadorPlazas />
         </div>
       </section>
 

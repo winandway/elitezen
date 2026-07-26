@@ -45,8 +45,17 @@ export function usePlazas(): Plazas {
     pedirPlazas().then((p) => {
       if (activo) setPlazas(p);
     });
+    // refresco periódico: la barra se mueve sola sin recargar la página
+    const temporizador = setInterval(() => {
+      cache = null;
+      promesa = null;
+      pedirPlazas().then((p) => {
+        if (activo) setPlazas(p);
+      });
+    }, 45_000);
     return () => {
       activo = false;
+      clearInterval(temporizador);
     };
   }, []);
 
