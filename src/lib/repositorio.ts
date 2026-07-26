@@ -234,7 +234,19 @@ export async function confirmarPedido(
     if (!pedido) return { ok: false, error: "Pedido no encontrado" };
 
     const existente = await epinDePedido(pedidoId);
-    if (existente) return { ok: true, epin: existente };
+    if (existente) {
+      // el ePIN ya existía (p. ej. se confirmó, se anuló y se reconfirma):
+      // hay que volver a dejar el pedido en pagado, no solo devolver el código
+      if (pedido.estado !== "pagado") {
+        await db
+          .prepare(
+            "UPDATE pedidos SET estado = 'pagado', confirmado_en = datetime('now') WHERE id = ?",
+          )
+          .bind(pedidoId)
+          .run();
+      }
+      return { ok: true, epin: existente };
+    }
 
     await db
       .prepare(
@@ -264,7 +276,13 @@ export async function confirmarPedido(
   const pedido = memoria.pedidos.find((p) => p.id === pedidoId);
   if (!pedido) return { ok: false, error: "Pedido no encontrado" };
   const existente = memoria.epins.find((e) => e.pedido_id === pedidoId);
-  if (existente) return { ok: true, epin: existente };
+  if (existente) {
+    if (pedido.estado !== "pagado") {
+      pedido.estado = "pagado";
+      pedido.confirmado_en = ahora();
+    }
+    return { ok: true, epin: existente };
+  }
   pedido.estado = "pagado";
   pedido.confirmado_en = ahora();
   const epin: Epin = {
